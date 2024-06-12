@@ -4,8 +4,8 @@ import aiofiles
 from fastapi import File
 import string
 from abc import abstractmethod, ABC
-from api_service.app.clients.clients import FileServiceClient
-from api_service.app.config.config import FILE_PATH_UPLOAD_TMP, FILE_PATH_DOWNLOAD_TMP
+from app.clients.clients import FileServiceClient
+from app.config.config import FILE_PATH_UPLOAD_TMP, FILE_PATH_DOWNLOAD_TMP
 
 
 class Service(ABC):
@@ -42,7 +42,7 @@ class FileService(Service):
             data = await file.read()
             await buffer.write(data)
 
-        res = await self._file_client.send_file(filepath=file.filename, chunk_size=file.size)
+        res = await self._file_client.send_file(filepath=filename_path, chunk_size=len(await file.read()))
         return res
 
     async def get_file_by_id(self, bucket_name: str, object_name: str):

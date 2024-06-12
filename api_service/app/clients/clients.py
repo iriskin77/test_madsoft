@@ -16,9 +16,9 @@ class FileServiceClient:
         self._url_put = url_fileservice_put
         self._url_delete = url_fileservice_delete
 
-    async def _file_sender(self, file_name: str, chunk_size: int) -> Generator[bytes, None, None]:
+    async def _file_sender(self, filepath: str, chunk_size: int) -> Generator[bytes, None, None]:
 
-        async with aiofiles.open(file_name, 'rb') as f:
+        async with aiofiles.open(filepath, 'rb') as f:
             chunk = await f.read(chunk_size)
 
             while chunk:
@@ -29,7 +29,7 @@ class FileServiceClient:
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 self._url_post,
-                data=self._file_sender(file_name=filepath, chunk_size=chunk_size)
+                data=self._file_sender(filepath=filepath, chunk_size=chunk_size)
             ) as resp:
                 return resp.status
 

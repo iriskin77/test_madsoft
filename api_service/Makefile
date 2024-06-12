@@ -1,3 +1,3 @@
 
 start:
-	uvicorn app.cmd.main:app --reload
+	uvicorn app.cmd.main:app --reload --host 0.0.0.0 --port 8002

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from fastapi.responses import JSONResponse, FileResponse
-from api_service.app.container.container import container
+from app.container.container import container
 
 
 router_file = APIRouter()

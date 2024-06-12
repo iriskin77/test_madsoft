@@ -18,7 +18,7 @@ class Repository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def create(self, object_name: str, file_path: str):
+    def create(self, file_name: str, file_path: str):
         raise NotImplementedError
 
     @abstractmethod
@@ -58,14 +58,14 @@ class FileRepository(Repository, Generic[ModelType, CreateSchemaType, UpdateSche
         print(files)
         return files
 
-    async def create(self, object_name: str, file_path: str):
+    async def create(self, file_name: str, file_path: str):
 
         found = client.bucket_exists(self._bucket_name)
         if not found:
             client.make_bucket(self._bucket_name)
 
         self._client.fput_object(bucket_name=self._bucket_name,
-                                 object_name=object_name,
+                                 object_name=file_name,
                                  file_path=file_path)
         return True
 
@@ -79,8 +79,3 @@ class FileRepository(Repository, Generic[ModelType, CreateSchemaType, UpdateSche
         self._client.remove_object(bucket_name=self._bucket_name,
                                    object_name=object_name)
         return True
-
-
-# initialize repository
-repo = FileRepository(client_minio=client,
-                      bucket_name="file_storage")

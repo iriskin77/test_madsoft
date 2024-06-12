@@ -1,5 +1,3 @@
-from typing import Generator
-import aiofiles
 import aiohttp
 
 
@@ -16,22 +14,23 @@ class FileServiceClient:
         self._url_put = url_fileservice_put
         self._url_delete = url_fileservice_delete
 
-    async def _file_sender(self, filepath: str, chunk_size: int) -> Generator[bytes, None, None]:
-
-        async with aiofiles.open(filepath, 'rb') as f:
-            chunk = await f.read(chunk_size)
-
-            while chunk:
-                yield chunk
-                chunk = await f.read(chunk_size)
-
     async def send_file(self, filepath: str, chunk_size: int):
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                self._url_post,
-                data=self._file_sender(filepath=filepath, chunk_size=chunk_size)
-            ) as resp:
-                return resp.status
+
+        hdr = {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+        'Accept-Encoding': 'none',
+        'Accept-Language': 'en-US,en;q=0.8',
+        'Connection': 'keep-alive',
+        "CONTENT-DISPOSITION": f"attachment;filename={filepath}"}
+
+        print(filepath)
+
+        with open(filepath, 'rb') as f:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(self._url_post, headers=hdr, data={"file": f}) as resp:
+                    return await resp.json()
 
     async def get_file(self):
         pass

@@ -4,8 +4,8 @@ import aiofiles
 from fastapi import File
 import string
 from abc import abstractmethod, ABC
-from app.clients.clients import FileServiceClient
-from app.config.config import FILE_PATH_UPLOAD_TMP, FILE_PATH_DOWNLOAD_TMP
+from api_service.app.clients.clients import FileServiceClient
+from api_service.app.config.config import FILE_PATH_UPLOAD_TMP, FILE_PATH_DOWNLOAD_TMP
 
 
 class Service(ABC):
@@ -15,7 +15,7 @@ class Service(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_file_by_id(self, bucket_name: str, object_name: str):
+    def get_file(self, object_name: str):
         raise NotImplementedError
 
     def get_list_files(self, bucket_name: str):
@@ -45,8 +45,10 @@ class FileService(Service):
         res = await self._file_client.send_file(filepath=filename_path, chunk_size=len(await file.read()))
         return res
 
-    async def get_file_by_id(self, bucket_name: str, object_name: str):
-        raise NotImplementedError
+    async def get_file(self, object_name: str):
+
+        file = await self._file_client.get_file(filename=object_name)
+        return file
 
     async def get_list_files(self, bucket_name: str):
         raise NotImplementedError

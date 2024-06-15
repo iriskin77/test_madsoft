@@ -1,11 +1,11 @@
-from app.config.config import (
+from api_service.app.config.config import (
     FILE_SERVICE_URL_GET,
     FILE_SERVICE_URL_POST,
     FILE_SERVICE_URL_PUT,
     FILE_SERVICE_URL_DELETE,
 )
-from app.clients.clients import FileServiceClient
-from app.services.services import FileService
+from api_service.app.clients.clients import FileServiceClient
+from api_service.app.services.services import FileService
 
 
 class Container:

@@ -10,7 +10,7 @@ client = Minio("localhost:9000", access_key="minio_user", secret_key="minio_pass
 class Repository(ABC):
 
     @abstractmethod
-    def get(self, object_name: str, file_path: str):
+    def get(self, object_name: str):
         raise NotImplementedError
 
     @abstractmethod
@@ -18,7 +18,7 @@ class Repository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def create(self, file_name: str, file_path: str):
+    def create(self, file_name: str):
         raise NotImplementedError
 
     @abstractmethod
@@ -41,16 +41,21 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 class FileRepository(Repository, Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
-    def __init__(self, client_minio: Minio, bucket_name: str):
+    def __init__(self, client_minio: Minio,
+                 bucket_name: str,
+                 file_path_upload: str,
+                 file_path_download: str):
+
         self._client = client_minio
         self._bucket_name = bucket_name
+        self._file_path_upload = file_path_upload
+        self._file_path_download = file_path_download
 
-    async def get(self,  object_name: str, file_path: str):
-        path_download_tmp_dir = file_path + object_name
+    async def get(self, object_name: str):
+        path_download_tmp_dir = self._file_path_download + object_name
         file = self._client.fget_object(bucket_name=self._bucket_name,
                                         object_name=object_name,
                                         file_path=path_download_tmp_dir)
-
         return file
 
     async def get_list_files(self):
@@ -58,15 +63,17 @@ class FileRepository(Repository, Generic[ModelType, CreateSchemaType, UpdateSche
         print(files)
         return files
 
-    async def create(self, file_name: str, file_path: str):
+    async def create(self, file_name: str):
 
         found = client.bucket_exists(self._bucket_name)
         if not found:
             client.make_bucket(self._bucket_name)
 
+        path_upload_tmp_dir = self._file_path_upload + file_name
+
         self._client.fput_object(bucket_name=self._bucket_name,
                                  object_name=file_name,
-                                 file_path=file_path)
+                                 file_path=path_upload_tmp_dir)
         return True
 
     async def put(self):

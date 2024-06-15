@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.handlers.handlers import router_file
+from file_service.app.handlers.handlers import router_file
 
 app = FastAPI()
 

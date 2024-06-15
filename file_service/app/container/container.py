@@ -1,4 +1,4 @@
-from file_service.app.repository.repository import Repository, FileRepository, client
+from file_service.app.repository import FileRepository, client
 from file_service.app.config.config import FILE_PATH_UPLOAD_TMP, FILE_PATH_DOWNLOAD_TMP
 
 
